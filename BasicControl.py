@@ -16,7 +16,7 @@ def update_state(action_number):
     global state
 
     if action_number == "0":  # 모든 모터 초기 위치로 리셋 (Reset)
-        state = [180, 0, 90]
+        state = [180, 0, 70]
 
     elif action_number == "1":  # 왼쪽 팔을 90도로 이동
         state[0] = 90
@@ -45,4 +45,5 @@ while True:
     if user_input in ["0", "1", "2", "3", "4"]:
         update_state(user_input)
     else:
+
         print("잘못된 입력입니다. 0, 1, 2, 3, 4 중에서 입력해 주세요.")
