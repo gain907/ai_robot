@@ -1,13 +1,5 @@
 """
-Basic Servo Movement Script
-
-Uses the cvzone library to send in angles to your arduino board for
-the 3 servos motors
-
-Requirements:
-- install the pyserial lib
-- cvzone library
-- Make sure talking_ai_robot.ino is compiled and uploaded in arduino
+Gestures script using move_servo and delays
 """
 # ------------------- Import Libraries -------------------
 
@@ -19,19 +11,18 @@ from time import sleep  # Import sleep to add delays between actions
 # Create a Serial object with three digits precision for sending servo angles
 arduino = SerialObject(digits=3)
 
-# 아두이노 부팅 대기
-# 아두이노가 부
-
-
 # Initialize the last known positions for the three servos: Left (LServo), Right (RServo), Head (HServo)
 # LServo starts at 180 degrees, RServo at 0 degrees, and HServo at 90 degrees
 last_positions = [180, 0, 90]
+
+
 #                [LServo , RServo ,HServo ]
+
 
 # ------------------- Functions -------------------
 
 # Function to smoothly move servos to target positions
-def move_servo(target_positions, delay=0.0001):
+def move_servo(target_positions, delay=0.001):
     """
     Moves the servos smoothly to the target positions.
 
@@ -58,28 +49,96 @@ def move_servo(target_positions, delay=0.0001):
     # Update the last known positions to the target positions
     last_positions = target_positions[:]
 
+
+# ---------------- Gestures for single servo ----------
+
+def casual_rest():
+    global last_positions
+    # casual rest turns servo to rest positons..
+    for _ in range(2):
+        move_servo([170, 10,100])
+        move_servo([180,0,90])
+
+
 def hello_gesture():
     """
-    Makes Emma wave hello by moving the right servo back and forth.
+    Makes Nova wave hello by moving the right servo back and forth.
     """
     global last_positions
     # Move right arm to start waving
-    # last_positions = [180, 0, 90]
     move_servo([last_positions[0], 180, last_positions[2]])
     for _ in range(3):  # Perform the waving motion 3 times
         move_servo([last_positions[0], 150, last_positions[2]])  # Move arm slightly down
         move_servo([last_positions[0], 180, last_positions[2]])  # Move arm back up
     # Reset arm to original position
+    move_servo([last_positions[0], 0, last_positions[2]])
 
 
-    move_servo([last_positions[0], 0, last_positions[2]], delay=0.02)
+def dizzy_gesture():
+    while True:
+        global last_positions
+        print("Starting Playful Dance")
+        for _ in range(4):
+            move_servo([last_positions[0], last_positions[1], 140])  # Move servos to position for dance
+            move_servo([last_positions[0], last_positions[1], 50])  # Move servos to another position
 
+        move_servo([last_positions[0], 0, last_positions[2]])
+
+
+# ------------ Gestures for 2 servos ---------------
+
+def sleep_gesture():
+    while True:
+        # Move both arms
+        for _ in range(2):
+            print("Sleeping")
+            move_servo([150, 0, last_positions[2]], delay=0.02)
+            move_servo([180, 30, last_positions[2]], delay=0.02)
+
+
+def sad_happy_gesture():
+    while True:
+        # Move both arms playfully
+        for _ in range(4):
+            print("Moving both arms")
+            move_servo([100, 0, last_positions[2]])
+            move_servo([180, 80, last_positions[2]])
+
+
+# ------------------ Gestures for 3 servos -----------------
+
+def surprised_gesture():
+    while True:
+        # Move both arms playfully
+        for _ in range(4):
+            print("Moving both arms")
+            move_servo([10, 130, 80])
+            move_servo([50, 170, 100])
+
+
+def angry_gesture():
+    while True:
+        for _ in range(4):
+            print("Moving both arms")
+            move_servo([10, 100, 110])
+            move_servo([80, 170, 80])
+
+
+# ------------------ Custom Gesture
+
+def fist_bump():
+    global last_positions, switch_video
+    print("Performing Fist Bump")
+    move_servo([last_positions[0], 90, last_positions[2]])
+    sleep(2)
+    switch_video = True  # Signal to switch video
+    for _ in range(4):
+        move_servo([10, 130, 80])
+        move_servo([50, 170, 100])
+    move_servo([180, 0,last_positions[2]])
 
 
 # ------------------- Main Loop -------------------
 
-# Infinite loop to continuously demonstrate servo movements
-target_positions = [180, 0, 90]  # Set target positions for LServo, RServo, and HServo
-move_servo(target_positions)
-
 # hello_gesture()
+angry_gesture()
